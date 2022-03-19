@@ -10,8 +10,9 @@ class Server: public QObject
     Q_OBJECT
 public:
     explicit Server(QObject *parent = 0);
+    bool listen();
     QPixmap map;
-public slots:
+private slots:
     void connection();
 signals:
     void onReceived();

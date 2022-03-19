@@ -3,20 +3,25 @@
 Server::Server(QObject *parent) :
     QObject(parent)
 {
-    this->server = new QTcpServer(this);
-    connect(this->server, SIGNAL(newConnection()), this, SLOT(connection()));
+    // Инициализация сервера
+    server = new QTcpServer(this);
+    connect(server, SIGNAL(newConnection()), this, SLOT(connection()));
+}
+bool Server::listen() {
     if(!server->listen(QHostAddress::Any, 80)) {
-        return;
+        return false;
     }
+    return true;
 }
 void Server::connection() {
     QTcpSocket *socket = server->nextPendingConnection();
     if(socket->waitForReadyRead()) {
+        // Чтение размера массива байт
         QByteArray bytearray = socket->read(8);
         QDataStream ds(bytearray);
         qint64 length;
         ds >> length;
-        qDebug() << bytearray;
+        // Чтение массива байт
         QByteArray imageArray;
         while(socket->bytesAvailable() < length) {
             if(socket->waitForReadyRead()) {
@@ -25,7 +30,7 @@ void Server::connection() {
                 length -= buf.size();
             }
         }
-        qDebug() << imageArray.size();
+        // Преобразование QByteArray к QPixmap для отображения
         map.loadFromData(imageArray, "PNG");
         emit(onReceived());
     }

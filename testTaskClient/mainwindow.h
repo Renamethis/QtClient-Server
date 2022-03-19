@@ -1,10 +1,10 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-
 #include <QMainWindow>
 #include <QImageReader>
 #include <QFileDialog>
 #include <QPixmap>
+#include <QMessageBox>
 #include <socket.h>
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -18,8 +18,11 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 private slots:
-    void buttonHandler();
+    void loadHandler();
+    void sendHandler();
+
 private:
+    QPixmap currentImage;
     Ui::MainWindow *ui;
     Socket sock;
 };

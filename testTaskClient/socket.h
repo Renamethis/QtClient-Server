@@ -11,7 +11,8 @@ class Socket: public QObject
 public:
     explicit Socket(QObject *parent = 0);
     void sendImage(QPixmap &img);
-    bool connect();
+    bool connectToServer(QString adress, int port);
+    QAbstractSocket::SocketState state;
 private:
     QTcpSocket *socket;
 };

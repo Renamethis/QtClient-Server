@@ -1,29 +1,27 @@
 #include "socket.h"
 
 Socket::Socket(QObject *parent) :
-    QObject(parent)
-{
-
-}
+    QObject(parent) {}
 void Socket::sendImage(QPixmap &img) {
+    // Преобразование изображения в ByteArray
     QByteArray ba;
-    QBuffer buffer(&ba);
-    img.save(&buffer, "PNG");
-    QBuffer buf;
-    buf.open(QBuffer::ReadWrite);
-    QDataStream stream(&buf);
-    qint64 v = buffer.size();
+    QBuffer imageBuffer(&ba);
+    img.save(&imageBuffer, "PNG");
+    // Вычисление размера полученного ByteArray
+    QBuffer lengthBuffer;
+    lengthBuffer.open(QBuffer::ReadWrite);
+    QDataStream stream(&lengthBuffer);
+    qint64 v = imageBuffer.size();
     stream << v;
-    QByteArray arr=buf.buffer();
-    qDebug() << buffer.size();
+    QByteArray arr=lengthBuffer.buffer();
+    qDebug() << imageBuffer.size();
+    // Отправка размера и самого массива байт
     socket->write(arr);
     socket->write(ba);
-    if(socket->waitForBytesWritten()) {
-    }
 }
-bool Socket::connect() {
-    this->socket = new QTcpSocket(this);
-    socket->connectToHost("127.0.0.1", 80);
+bool Socket::connectToServer(QString adress, int port) {
+    socket = new QTcpSocket(this);
+    socket->connectToHost(adress, port);
     if(socket->waitForConnected()) {
         return true;
     }
